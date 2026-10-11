@@ -1,151 +1,270 @@
 # OpenClaw Plugin Template 🦊
 
-Dies ist eine Vorlage zum Erstellen von Plugins für [OpenClaw](https://openclaw.ai).
+A template repository for developing and organizing multiple OpenClaw plugins.
 
-## 📦 Repository-Inhalt
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-Plugin%20Template-orange)](https://openclaw.ai)
 
-- `src/plugin.js` - Beispiel-Plugin-Code
-- `LICENSE` - Apache 2.0 Lizenz
-- `README.md` - Diese Datei
+## 📦 Repository Structure
 
-## 🚀 Wie man ein Plugin aus diesem Repository erstellt
+This repository is designed to hold multiple plugins in a single place:
 
-### 1. Repository klonen
+```
+openclaw-plugin-template/
+├── src/
+│   ├── index.js               # Main entry point - exports all plugins
+│   └── plugins/               # Plugin directory
+│       ├── helloWorld.js      # Example plugin 1
+│       ├── pluginName.js      # Your plugin here
+│       └── anotherPlugin.js   # Another plugin
+├── tests/                     # Plugin tests
+│   └── index.test.js
+├── LICENSE                    # Apache 2.0 License
+├── README.md                  # This file
+├── CHANGELOG.md               # Version history
+└── .gitignore                 # Git exclusions
+```
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/BelphegorPrime/openclaw-plugin-template.git
 cd openclaw-plugin-template
 ```
 
-### 2. Plugin anpassen
+### 2. Add Your Plugin
 
-Bearbeite `src/plugin.js` mit deinem eigenen Code:
+Create a new plugin file in `src/plugins/`:
 
 ```javascript
-const PLUGIN_NAME = "mein-plugin";
+// src/plugins/myPlugin.js
+
+const PLUGIN_NAME = "my-plugin";
 const PLUGIN_VERSION = "1.0.0";
 
 function setup() {
   console.log(`🚀 ${PLUGIN_NAME} v${PLUGIN_VERSION} initialized`);
 }
 
-function meineFunktion() {
-  // Deine Logik hier
+function myFunction() {
+  // Your plugin logic here
+}
+
+function getMetadata() {
+  return {
+    name: PLUGIN_NAME,
+    version: PLUGIN_VERSION,
+    author: "Your Name",
+    description: "My awesome OpenClaw plugin",
+    license: "Apache-2.0"
+  };
 }
 
 module.exports = {
   setup,
-  meineFunktion
+  myFunction,
+  getMetadata
 };
 ```
 
-### 3. Plugin-Dateimetadaten aktualisieren
+### 3. Export Your Plugin
 
-- `package.json` (optional) - Für npm-Installation
-- Plugin-Kommentare mit deinen Details aktualisieren
+Add your plugin to `src/index.js`:
 
-## 🔧 Wie man Plugins in OpenClaw installiert
-
-### Methode 1: Direkt aus lokalem Ordner
-
-```bash
-# In der OpenClaw Konfiguration Plugin-Verzeichnis hinzufügen
-openclaw configure plugins add /pfad/zum/plugin/
-
-# Oder Plugin als Modul installieren
-openclaw plugins install .
+```javascript
+const plugins = {
+  helloWorld: require('./plugins/helloWorld'),
+  myPlugin: require('./plugins/myPlugin')  // Add your plugin here
+};
 ```
 
-### Methode 2: Über ClawHub
+## 🔧 Installing Plugins in OpenClaw
 
-1. **Plugin vorbereiten:**
-   - Plugin-Code in `src/`
-   - `package.json` erstellen (optional)
-   - `README.md` mit Usage-Beispielen
-   - Tests schreiben
+### Method 1: Install from Local Directory
 
-2. **Plugin veröffentlichen:**
+```bash
+# Navigate to the repository
+cd openclaw-plugin-template
+
+# Install all plugins
+openclaw plugins install .
+
+# Or install specific plugins only
+openclaw plugins install src/plugins/helloWorld.js
+```
+
+### Method 2: Install via ClawHub
+
+1. **Prepare your plugin:**
+   - Add plugin to `src/plugins/`
+   - Export in `src/index.js`
+   - Write tests
+   - Update documentation
+
+2. **Publish to ClawHub:**
    ```bash
-   # Zu ClawHub hinzufügen
    openclaw plugins publish
    ```
 
-3. **Installation:**
+3. **Install from ClawHub:**
    ```bash
-   openclaw plugins install mein-plugin
+   openclaw plugins install my-plugin
    ```
 
-### Methode 3: Aus GitHub Repository
+### Method 3: Install from GitHub Repository
 
 ```bash
-# Plugin aus GitHub Repository installieren
+# Install entire plugin collection
 openclaw plugins install git+https://github.com/BelphegorPrime/openclaw-plugin-template.git
+
+# Or install a specific plugin by path
+openclaw plugins install git+https://github.com/BelphegorPrime/openclaw-plugin-template.git#src/plugins/helloWorld.js
 ```
 
-### Methode 4: Direkte Datei-Installation
+### Method 4: Direct File Installation
 
 ```bash
-# Plugin-Datei in OpenClaw Plugin-Verzeichnis kopieren
-cp src/plugin.js ~/.openclaw/plugins/
+# Copy plugin file to OpenClaw plugins directory
+cp src/plugins/helloWorld.js ~/.openclaw/plugins/
 
-# Plugin aktivieren
-openclaw plugins enable plugin.js
+# Enable the plugin
+openclaw plugins enable helloWorld.js
+
+# Or require it directly in your code
+const helloWorld = require('~/.openclaw/plugins/helloWorld');
+helloWorld.setup();
 ```
 
-## 📋 Plugin-Struktur (empfohlen)
+## 📋 Creating a New Plugin - Checklist
 
+- [ ] Create plugin file in `src/plugins/`
+- [ ] Implement `setup()` function
+- [ ] Export plugin functions via `module.exports`
+- [ ] Include `getMetadata()` function
+- [ ] Add plugin to `src/index.js` exports
+- [ ] Write tests in `tests/` directory
+- [ ] Update README with usage examples
+- [ ] Add .gitignore entries if needed
+- [ ] Update version number
+- [ ] Create CHANGELOG entry
+
+## 📖 Plugin API Reference
+
+Every plugin should follow this structure:
+
+```javascript
+const PLUGIN_NAME = "unique-plugin-name";
+const PLUGIN_VERSION = "1.0.0";
+
+/**
+ * Initialize the plugin
+ * Called when plugin is loaded
+ */
+function setup() {
+  // Setup logic here
+}
+
+/**
+ * Main plugin functionality
+ * @returns {any} Result of the operation
+ */
+function mainFunction() {
+  // Your logic
+}
+
+/**
+ * Get plugin metadata
+ * @returns {Object} Plugin metadata object
+ */
+function getMetadata() {
+  return {
+    name: PLUGIN_NAME,
+    version: PLUGIN_VERSION,
+    author: "Your Name",
+    description: "Plugin description",
+    license: "Apache-2.0"
+  };
+}
+
+module.exports = {
+  setup,
+  mainFunction,
+  getMetadata
+};
 ```
-mein-plugin/
-├── src/
-│   ├── plugin.js          # Hauptplugin-Code
-│   └── tests/             # Tests
-│       └── plugin.test.js
-├── README.md              # Plugin-Dokumentation
-├── LICENSE                # Lizenz (Apache-2.0 empfohlen)
-├── .gitignore             # Git-Ausschlüsse
-└── package.json           # (Optional) npm Metadaten
+
+## 🧪 Testing
+
+Create tests for your plugins:
+
+```javascript
+// tests/index.test.js
+
+const plugins = require('../src/index');
+
+describe('Plugins', () => {
+  describe('helloWorld', () => {
+    it('should initialize', () => {
+      plugins.helloWorld.setup();
+      expect(plugins.helloWorld.getMetadata().name).toBe('hello-world');
+    });
+
+    it('should greet correctly', () => {
+      const result = plugins.helloWorld.greet('Test');
+      expect(result).toBe('Hello, Test! Welcome to OpenClaw!');
+    });
+  });
+});
 ```
 
-## ✅ Plugin-Entwicklungs-Checkliste
+Run tests with:
+```bash
+npm test
+# or
+node --test tests/*.js
+```
 
-- [ ] Plugin-Code geschrieben
-- [ ] Tests implementiert
-- [ ] README.md mit Usage-Beispielen
-- [ ] Lizenzdatei vorhanden
-- [ ] .gitignore konfiguriert
-- [ ] Plugin in OpenClaw getestet
-- [ ] Versionsnummer aktualisiert
-- [ ] CHANGELOG erstellt (optional)
+## 🐛 Troubleshooting
 
-## 🐛 Fehlerbehebung
+### "Plugin not found"
+- Ensure the plugin path is correct
+- Check that the plugin file exists
+- Verify file permissions
 
-### "Plugin nicht gefunden"
-- Stelle sicher, dass der Plugin-Pfad korrekt ist
-- Überprüfe, ob die Plugin-Datei existiert
-- Prüfe die Dateiberechtigungen
+### "Plugin cannot be loaded"
+- Check syntax in the plugin file
+- Ensure `module.exports` is correct
+- Check OpenClaw logs for errors
+- Verify the plugin is exported in `src/index.js`
 
-### "Plugin kann nicht geladen werden"
-- Überprüfe den Syntax in der Plugin-Datei
-- Stelle sicher, dass `module.exports` korrekt ist
-- Prüfe die OpenClaw Logs für Fehlerdetails
+### "Multiple plugins conflict"
+- Use unique plugin names in `getMetadata()`
+- Avoid global variable pollution
+- Isolate plugin state
 
-## 📚 Weitere Ressourcen
+## 📚 Additional Resources
 
-- [OpenClaw Dokumentation](https://docs.openclaw.ai)
+- [OpenClaw Documentation](https://docs.openclaw.ai)
 - [ClawHub](https://clawhub.ai) - Plugin Marketplace
 - [OpenClaw GitHub](https://github.com/openclaw/openclaw)
 
-## 🤝 Beiträge willkommen!
+## 🤝 Contributing
 
-Pull Requests sind willkommen! Bitte:
-1. Fork das Repository
-2. Feature-Branch erstellen
-3. Changes committen
-4. Branch pushen
-5. Pull Request öffnen
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Write/update tests
+5. Update documentation
+6. Commit and push
+7. Open a Pull Request
+
+## 📄 License
+
+Apache 2.0 - See [LICENSE](LICENSE) file for details.
 
 ---
 
-**Lizenz:** Apache 2.0 - Siehe [LICENSE](LICENSE) Datei
-
-**Erstellt mit ❤️ für die OpenClaw Community**
+**Built with ❤️ for the OpenClaw Community**
