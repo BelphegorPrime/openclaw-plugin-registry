@@ -15,7 +15,8 @@
  */
 
 const plugins = {
-  helloWorld: require('./plugins/helloWorld')
+  helloWorld: require('./plugins/helloWorld'),
+  forgejoConfig: require('./plugins/forgejoConfig')
 };
 
 // Automatically setup all plugins if this file is run directly
