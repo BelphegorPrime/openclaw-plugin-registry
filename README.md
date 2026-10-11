@@ -1,24 +1,26 @@
-# OpenClaw Plugin Template 🦊
+# OpenClaw Plugin Registry 🦊
 
-A template repository for developing and organizing multiple OpenClaw plugins.
+A central repository for developing and organizing multiple OpenClaw plugins.
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![OpenClaw](https://img.shields.io/badge/OpenClaw-Plugin%20Template-orange)](https://openclaw.ai)
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-Plugin%20Registry-orange)](https://openclaw.ai)
 
 ## 📦 Repository Structure
 
 This repository is designed to hold multiple plugins in a single place:
 
 ```
-openclaw-plugin-template/
+openclaw-plugin-registry/
 ├── src/
 │   ├── index.js               # Main entry point - exports all plugins
 │   └── plugins/               # Plugin directory
 │       ├── helloWorld.js      # Example plugin 1
-│       ├── pluginName.js      # Your plugin here
-│       └── anotherPlugin.js   # Another plugin
+│       └── git-servers/       # Git Server Management Plugins
+│           ├── forgejoConfig.js
+│           ├── gitlabConfig.js
+│           └── giteaConfig.js
 ├── tests/                     # Plugin tests
-│   └── index.test.js
+│   └── forgejoConfig.test.js
 ├── LICENSE                    # Apache 2.0 License
 ├── README.md                  # This file
 ├── CHANGELOG.md               # Version history
@@ -30,44 +32,13 @@ openclaw-plugin-template/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/BelphegorPrime/openclaw-plugin-template.git
-cd openclaw-plugin-template
+git clone https://github.com/BelphegorPrime/openclaw-plugin-registry.git
+cd openclaw-plugin-registry
 ```
 
 ### 2. Add Your Plugin
 
-Create a new plugin file in `src/plugins/`:
-
-```javascript
-// src/plugins/myPlugin.js
-
-const PLUGIN_NAME = "my-plugin";
-const PLUGIN_VERSION = "1.0.0";
-
-function setup() {
-  console.log(`🚀 ${PLUGIN_NAME} v${PLUGIN_VERSION} initialized`);
-}
-
-function myFunction() {
-  // Your plugin logic here
-}
-
-function getMetadata() {
-  return {
-    name: PLUGIN_NAME,
-    version: PLUGIN_VERSION,
-    author: "Your Name",
-    description: "My awesome OpenClaw plugin",
-    license: "Apache-2.0"
-  };
-}
-
-module.exports = {
-  setup,
-  myFunction,
-  getMetadata
-};
-```
+Create a new plugin file in `src/plugins/` or a category subfolder. See the `forgejoConfig.js` for a real-world example.
 
 ### 3. Export Your Plugin
 
@@ -82,148 +53,57 @@ const plugins = {
 
 ## 🔧 Installing Plugins in OpenClaw
 
-### Method 1: Install from Local Directory
-
+### Local Development Installation
+For fast iteration during development, copy the plugin file directly:
 ```bash
-# Navigate to the repository
-cd openclaw-plugin-template
-
-# Install all plugins
-openclaw plugins install .
-
-# Or install specific plugins only
-openclaw plugins install src/plugins/helloWorld.js
+cp src/plugins/myPlugin.js ~/.openclaw/plugins/
 ```
 
-### Method 2: Install via ClawHub
-
-1. **Prepare your plugin:**
-   - Add plugin to `src/plugins/`
-   - Export in `src/index.js`
-   - Write tests
-   - Update documentation
-
-2. **Publish to ClawHub:**
-   ```bash
-   openclaw plugins publish
-   ```
-
-3. **Install from ClawHub:**
-   ```bash
-   openclaw plugins install my-plugin
-   ```
-
-### Method 3: Install from GitHub Repository
-
+### Official Package Installation
+Create a `package.json` in the plugin directory and install via:
 ```bash
-# Install entire plugin collection
-openclaw plugins install git+https://github.com/BelphegorPrime/openclaw-plugin-template.git
-
-# Or install a specific plugin by path
-openclaw plugins install git+https://github.com/BelphegorPrime/openclaw-plugin-template.git#src/plugins/helloWorld.js
+openclaw plugins install /path/to/plugin-dir --force
 ```
 
-### Method 4: Direct File Installation
+## 🛠️ Special Case: Git Server Plugins Setup
 
+The `git-servers` plugins require a Personal Access Token (PAT) to communicate with the respective instances.
+
+### Token Configuration
+For security, the plugins read the token from a protected local file instead of storing it in the main config:
+
+- **Forgejo:** `~/.openclaw/config/.forgejo_token`
+- **GitLab:** `~/.openclaw/config/.gitlab_token`
+- **Gitea:** `~/.openclaw/config/.gitea_token`
+
+Example:
 ```bash
-# Copy plugin file to OpenClaw plugins directory
-cp src/plugins/helloWorld.js ~/.openclaw/plugins/
-
-# Enable the plugin
-openclaw plugins enable helloWorld.js
-
-# Or require it directly in your code
-const helloWorld = require('~/.openclaw/plugins/helloWorld');
-helloWorld.setup();
+echo "YOUR_TOKEN_HERE" > ~/.openclaw/config/.forgejo_token
+chmod 600 ~/.openclaw/config/.forgejo_token
 ```
 
-## 📋 Creating a New Plugin - Checklist
-
-- [ ] Create plugin file in `src/plugins/`
-- [ ] Implement `setup()` function
-- [ ] Export plugin functions via `module.exports`
-- [ ] Include `getMetadata()` function
-- [ ] Add plugin to `src/index.js` exports
-- [ ] Write tests in `tests/` directory
-- [ ] Update README with usage examples
-- [ ] Add .gitignore entries if needed
-- [ ] Update version number
-- [ ] Create CHANGELOG entry
-
-## 📖 Plugin API Reference
-
-Every plugin should follow this structure:
-
+### Configuring the Instance
+Once the token is in place, configure the server URL:
 ```javascript
-const PLUGIN_NAME = "unique-plugin-name";
-const PLUGIN_VERSION = "1.0.0";
-
-/**
- * Initialize the plugin
- * Called when plugin is loaded
- */
-function setup() {
-  // Setup logic here
-}
-
-/**
- * Main plugin functionality
- * @returns {any} Result of the operation
- */
-function mainFunction() {
-  // Your logic
-}
-
-/**
- * Get plugin metadata
- * @returns {Object} Plugin metadata object
- */
-function getMetadata() {
-  return {
-    name: PLUGIN_NAME,
-    version: PLUGIN_VERSION,
-    author: "Your Name",
-    description: "Plugin description",
-    license: "Apache-2.0"
-  };
-}
-
-module.exports = {
-  setup,
-  mainFunction,
-  getMetadata
-};
-```
-
-## 🧪 Testing
-
-Create tests for your plugins:
-
-```javascript
-// tests/index.test.js
-
-const plugins = require('../src/index');
-
-describe('Plugins', () => {
-  describe('helloWorld', () => {
-    it('should initialize', () => {
-      plugins.helloWorld.setup();
-      expect(plugins.helloWorld.getMetadata().name).toBe('hello-world');
-    });
-
-    it('should greet correctly', () => {
-      const result = plugins.helloWorld.greet('Test');
-      expect(result).toBe('Hello, Test! Welcome to OpenClaw!');
-    });
-  });
+// Using the plugin in OpenClaw
+forgejo.configureInstance({
+  url: 'https://git.szb.marcel.codes',
+  name: 'default'
 });
 ```
 
-Run tests with:
+## 📋 Plugin Architecture
+
+Every plugin should follow this structure:
+- **`setup()`**: Initialize the plugin.
+- **`getMetadata()`**: Return name, version, and description.
+- **Core Logic**: Export functions for the specific task.
+
+## 🧪 Testing
+
+Run tests from the root directory:
 ```bash
-npm test
-# or
-node --test tests/*.js
+node tests/test-forgejo.js
 ```
 
 ## 🐛 Troubleshooting
@@ -237,12 +117,6 @@ node --test tests/*.js
 - Check syntax in the plugin file
 - Ensure `module.exports` is correct
 - Check OpenClaw logs for errors
-- Verify the plugin is exported in `src/index.js`
-
-### "Multiple plugins conflict"
-- Use unique plugin names in `getMetadata()`
-- Avoid global variable pollution
-- Isolate plugin state
 
 ## 📚 Additional Resources
 
